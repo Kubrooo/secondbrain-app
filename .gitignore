@@ -18,3 +18,4 @@ Thumbs.db
 # Build output (Kalau nanti frontend sudah dicompile)
 dist/
 build/
+/generated/prisma

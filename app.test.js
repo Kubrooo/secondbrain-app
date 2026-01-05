@@ -16,3 +16,23 @@ describe('GET /', () => {
   });
 
 });
+
+describe('POST /notes', () => {
+  it('seharusnya bisa membuat catatan baru', async () => {
+    // 1. Data dummy yang mau kita kirim
+    const newNote = {
+      title: "Ide Project SecondBrain",
+      content: "Pakai Stack MERN biar modern."
+    };
+
+    // 2. Kirim request POST ke endpoint /notes
+    const response = await request(app)
+      .post('/notes')
+      .send(newNote);
+
+    // 3. Ekspektasi: Harusnya dapat status 201 (Created)
+    // dan responnya mengandung data yang sama
+    expect(response.statusCode).toBe(201);
+    expect(response.body.title).toBe(newNote.title);
+  });
+});
