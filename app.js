@@ -11,7 +11,6 @@ app.get('/', (req,res) => {
 
 // POST /notes
 app.post('/notes', async (req, res) => {
-  // DEBUG 1: Cek apakah data masuk?
   console.log("DATA MASUK:", req.body); 
   
   const { title, content } = req.body;
@@ -25,11 +24,21 @@ app.post('/notes', async (req, res) => {
     });
     res.status(201).json(newNote);
   } catch (error) {
-    // DEBUG 2: Cek apa errornya?
     console.error("ERROR PRISMA:", error); 
     
     res.status(500).json({ error: 'Gagal membuat catatan' });
   }
 });
+
+// GET /notes
+app.get('/notes', async (req, res) => {
+  try {
+    const notes = await prisma.note.findMany()
+    
+    res.status(200).json(notes)
+  } catch {
+    req.status(500).json({ error: 'Gagal mendapatkan catatan '})
+  }
+})
 
 module.exports = app;

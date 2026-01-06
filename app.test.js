@@ -35,4 +35,18 @@ describe('POST /notes', () => {
     expect(response.statusCode).toBe(201);
     expect(response.body.title).toBe(newNote.title);
   });
+
+describe('GET /notes', () => {
+  it('seharusnya mengembalikan semua catatan', async () => {
+    // 1. Kirim request GET ke endpoint /notes
+    const response = await request(app).get('/notes');
+
+    // 2. Ekspektasi: Status 200 (OK)
+    expect(response.statusCode).toBe(200);
+
+    // 3. Ekspektasi: Hasilnya harus berupa Array (Daftar catatan)
+    // Walaupun kosong, tetap harus array []
+    expect(Array.isArray(response.body)).toBe(true);
+  });
+});
 });
