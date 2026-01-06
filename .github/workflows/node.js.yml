@@ -1,0 +1,65 @@
+name: Node.js CI
+
+# Kapan satpam ini bekerja?
+# Setiap ada push ke branch main atau pull request
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # GitHub meminjamkan komputer Linux (Ubuntu)
+
+    # Masalah: GitHub tidak punya Postgres.
+    # Solusi: Kita minta GitHub jalankan Postgres sementara (Service Container)
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        # Tunggu sampai database benar-benar nyala (Health check)
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    # 1. Ambil kodingan kita dari repository
+    - uses: actions/checkout@v4
+
+    # 2. Install Node.js di server GitHub
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+
+    # 3. Install semua library (express, jest, prisma, dll)
+    - name: Install dependencies
+      run: npm ci
+
+    # 4. Generate Prisma Client (Wajib dilakukan setelah install)
+    - name: Generate Prisma Client
+      run: npx prisma generate
+
+    # 5. Push Schema ke Database Sementara milik GitHub
+    # Kita pakai DATABASE_URL yang sesuai dengan settingan 'services' di atas
+    - name: Setup Database Schema
+      run: npx prisma db push
+      env:
+        DATABASE_URL: postgres://user:password@localhost:5432/testdb
+
+    # 6. Jalankan Test (Momen Penentuan)
+    # Kalau ini gagal, GitHub akan kasih tanda silang Merah.
+    - name: Run Tests
+      run: npm test
+      env:
+        # Test juga butuh tahu alamat database-nya
+        DATABASE_URL: postgres://user:password@localhost:5432/testdb
