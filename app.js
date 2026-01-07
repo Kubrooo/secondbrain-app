@@ -39,30 +39,7 @@ app.get('/notes', async (req, res) => {
   } catch {
     req.status(500).json({ error: 'Gagal mendapatkan catatan '})
   }
-});
+})
 
-describe('PUT /notes/:id', () => {
-  it('seharusnya bisa mengubah (update) catatan yang ada', async () => {
-    // 1. Buat dulu catatan dummy (biar ada yang bisa diedit)
-    const createResponse = await request(app).post('/notes').send({
-      title: "Judul Salah",
-      content: "Isi ini mau diedit"
-    });
-    
-    const noteId = createResponse.body.id; // Ambil ID catatan tadi
-
-    // 2. Kirim request PUT ke endpoint /notes/:id
-    const updateResponse = await request(app)
-      .put(`/notes/${noteId}`) // Perhatikan backtick (`)
-      .send({
-        title: "Judul Revisi",
-        content: "Isi ini sudah diedit"
-      });
-
-    // 3. Ekspektasi: Status 200 dan datanya berubah
-    expect(updateResponse.statusCode).toBe(200);
-    expect(updateResponse.body.title).toBe("Judul Revisi");
-  });
-});
 
 module.exports = app;
