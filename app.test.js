@@ -73,4 +73,24 @@ describe('PUT /notes/:id', () => {
     expect(updateResponse.body.title).toBe("Judul Revisi");
   });
 });
+
+describe('DELETE /notes/:id', () => {
+  it('seharusnya bisa menghapus catatan', async () => {
+    // 1. Buat dulu catatan dummy untuk dihapus
+    const createResponse = await request(app).post('/notes').send({
+      title: "Mau Dihapus",
+      content: "Jangan rindu, berat. Biar aku saja."
+    });
+    
+    const noteId = createResponse.body.id;
+
+    // 2. Kirim request DELETE
+    const deleteResponse = await request(app).delete(`/notes/${noteId}`);
+
+    // 3. Ekspektasi: Status 200 dan pesan konfirmasi
+    expect(deleteResponse.statusCode).toBe(200);
+    expect(deleteResponse.body.message).toBe("Catatan berhasil dihapus");
+  });
+});
+
 });
