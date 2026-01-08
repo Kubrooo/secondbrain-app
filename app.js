@@ -1,9 +1,13 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 app.use(express.json());
+
+app.use(cors())
+app.use(express.json())
 
 app.get('/', (req,res) => {
     res.status(200).send('Halo! Backend SecondBrain sudah jalan.');
