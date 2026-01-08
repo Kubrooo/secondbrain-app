@@ -55,8 +55,6 @@ Ensure you have the following installed locally:
    ```bash
    npm test
    ```
-
-## API Endpoint
 ## API Endpoints
 
 - **Health Check**
