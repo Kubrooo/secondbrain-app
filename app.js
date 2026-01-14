@@ -45,6 +45,16 @@ app.get('/notes', async (req, res) => {
   }
 })
 
+// GET single note by ID
+app.get('/notes/:id', async (req, res) => {
+  const { id } = req.params;
+  const note = await prisma.note.findUnique({
+    where: { id: parseInt(id) }, // Pastikan pakai parseInt kalau ID di DB integer
+  });
+  if (!note) return res.status(404).json({ message: 'Note not found' });
+  res.json(note);
+});
+
 // PUT /notes/:id
 app.put('/notes/:id', async (req,res) => {
   const { id } = req.params;
