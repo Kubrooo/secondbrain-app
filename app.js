@@ -9,8 +9,12 @@ app.use(express.json());
 app.use(cors())
 app.use(express.json())
 
-app.get('/', (req,res) => {
-    res.status(200).send('Halo! Backend SecondBrain sudah jalan.');
+app.get('/', (req, res) => {
+  res.json({
+    message: "SecondBrain API is running",
+    status: "Success",
+    timestamp: new Date()
+  });
 });
 
 // POST /notes
