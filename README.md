@@ -67,6 +67,10 @@ Ensure you have the following installed locally:
   - `PUT /notes/:id` - Update an existing note by ID.
     - Body: `{ "title": "String", "content": "String" }`
   - `DELETE /notes/:id` - Remove a note by ID.
+
+## Database Setup
+This project uses PostgreSQL (via Neon.tech).
+Copy `.env.example` to `.env` and fill in your DATABASE_URL.
  
 ## Project Structure
 
@@ -82,4 +86,5 @@ secondbrain-app/
 ├── app.test.js        # Integration tests (Jest/Supertest)
 ├── index.js           # Server entry point
 ├── package.json       # Project dependencies and scripts
+├── .env.example       # dummy env file
 └── README.md          # Project documentation
