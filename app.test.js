@@ -1,20 +1,20 @@
 const request = require('supertest');
 const app = require('./app'); // Kita import app yang belum di-listen
 
-// Grouping test dengan 'describe'
 describe('GET /', () => {
-  
-  // Test case spesifik dengan 'it'
-  it('seharusnya mengembalikan status 200 dan pesan Halo', async () => {
-    
-    // Kirim request palsu ke app
+  it('seharusnya mengembalikan status 200 dan JSON health check', async () => {
     const response = await request(app).get('/');
     
-    // Assertions (Pengecekan)
+    // 1. Cek status code tetap 200
     expect(response.statusCode).toBe(200);
-    expect(response.text).toBe('Halo! Backend SecondBrain sudah jalan.');
-  });
 
+    // 2. Cek tipe kontennya JSON (bukan text lagi)
+    expect(response.headers['content-type']).toMatch(/json/);
+
+    // 3. Cek isinya mengandung properti yang kita buat tadi
+    expect(response.body.status).toBe('Success');
+    expect(response.body.message).toBe('SecondBrain API is running');
+  });
 });
 
 describe('POST /notes', () => {
