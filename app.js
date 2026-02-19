@@ -1,101 +1,31 @@
-const express = require('express');
-const cors = require('cors');
-const app = express();
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const express = require("express");
+const cors = require("cors");
+const authRoutes = require("./src/routes/auth");
+const noteRoutes = require("./src/routes/notes");
+const aiRoutes = require("./src/routes/ai");
 
+const app = express();
+
+// Middleware Global
+app.use(cors());
 app.use(express.json());
 
-app.use(cors())
-app.use(express.json())
-
-app.get('/', (req, res) => {
+// --- Health Check (Halaman Depan) ---
+app.get("/", (req, res) => {
   res.json({
-    message: "SecondBrain API is running",
+    message: "SecondBrain API is running (Modular Version)",
     status: "Success",
-    timestamp: new Date()
+    timestamp: new Date(),
   });
 });
 
-// POST /notes
-app.post('/notes', async (req, res) => {
-  console.log("DATA MASUK:", req.body); 
-  
-  const { title, content } = req.body;
+// 1. Auth Routes (Login & Register)
+app.use("/", authRoutes); 
 
-  try {
-    const newNote = await prisma.note.create({
-      data: {
-        title: title,
-        content: content,
-      },
-    });
-    res.status(201).json(newNote);
-  } catch (error) {
-    console.error("ERROR PRISMA:", error); 
-    
-    res.status(500).json({ error: 'Gagal membuat catatan' });
-  }
-});
+// 2. Note Routes (CRUD Catatan)
+app.use("/notes", noteRoutes);
 
-// GET /notes
-app.get('/notes', async (req, res) => {
-  try {
-    const notes = await prisma.note.findMany()
-    
-    res.status(200).json(notes)
-  } catch {
-    req.status(500).json({ error: 'Gagal mendapatkan catatan '})
-  }
-})
-
-// GET single note by ID
-app.get('/notes/:id', async (req, res) => {
-  const { id } = req.params;
-  const note = await prisma.note.findUnique({
-    where: { id: parseInt(id) }, // Pastikan pakai parseInt kalau ID di DB integer
-  });
-  if (!note) return res.status(404).json({ message: 'Note not found' });
-  res.json(note);
-});
-
-// PUT /notes/:id
-app.put('/notes/:id', async (req,res) => {
-  const { id } = req.params;
-  const { title, content } = req.body
-
-  try{
-    const updateNote = await prisma.note.update({
-      where: {
-        id: parseInt(id)
-      },
-      data: {
-        title: title,
-        content: content,
-      },
-    });
-
-    res.status(200).json(updateNote)
-  } catch (error) {
-    res.status(500).json({ error: 'Gagal mengupdate catatan'})
-  }
-})
-
-// DELETE /notes/:id
-app.delete('/notes/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try{
-    await prisma.note.delete({
-      where:{
-        id: parseInt(id)
-      }
-    })
-
-    res.status(200).json({ message: 'Catatan berhasil dihapus'})
-  } catch ( error ) {
-    res.status(500).json({ error: 'Gagal menghapus catatan'})
-  }
-})
+// 3. AI Routes (Gemini)
+app.use("/ai", aiRoutes);
 
 module.exports = app;

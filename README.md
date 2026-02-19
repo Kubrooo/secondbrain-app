@@ -88,3 +88,5 @@ secondbrain-app/
 ├── package.json       # Project dependencies and scripts
 ├── .env.example       # dummy env file
 └── README.md          # Project documentation
+
+feel free to create a pull request
